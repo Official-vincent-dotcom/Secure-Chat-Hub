@@ -12,6 +12,7 @@ const setupSocket = require('./config/socket');
 const authRoutes = require('./routes/auth');
 const messagesRoutes = require('./routes/messages');
 const roomsRoutes = require('./routes/rooms');
+const notificationsRoutes = require('./routes/notifications');
 
 const app = express();
 const server = http.createServer(app);
@@ -38,6 +39,19 @@ app.use(express.urlencoded({ limit: '10mb', extended: true }));
 // Static files
 app.use(express.static('public'));
 
+// Service Worker caching headers
+app.get('/service-worker.js', (req, res) => {
+  res.type('application/javascript');
+  res.header('Cache-Control', 'max-age=0, no-cache, no-store, must-revalidate');
+  express.static('public')(req, res);
+});
+
+// Manifest caching
+app.get('/manifest.json', (req, res) => {
+  res.header('Cache-Control', 'max-age=3600');
+  res.sendFile(__dirname + '/public/manifest.json');
+});
+
 // Health check endpoint
 app.get('/api/health', (req, res) => {
   res.json({
@@ -51,6 +65,7 @@ app.get('/api/health', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/messages', messagesRoutes);
 app.use('/api/rooms', roomsRoutes);
+app.use('/api/notifications', notificationsRoutes);
 
 // Socket.io setup
 const io = setupSocket(server);
@@ -82,7 +97,8 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/secure-ch
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
   console.log(`\n🔐 Secure-Chat-Hub running on port ${PORT}`);
-  console.log(`📍 Visit: http://localhost:${PORT}`);
+  console.log(`📱 Install as PWA: http://localhost:${PORT}`);
+  console.log(`📝 Visit: http://localhost:${PORT}`);
   console.log(`🚀 Environment: ${process.env.NODE_ENV || 'development'}\n`);
 });
 
