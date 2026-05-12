@@ -12,6 +12,8 @@ const setupSocket = require('./config/socket');
 const authRoutes = require('./routes/auth');
 const messagesRoutes = require('./routes/messages');
 const roomsRoutes = require('./routes/rooms');
+const groupsRoutes = require('./routes/groups');
+const groupMessagesRoutes = require('./routes/group-messages');
 const notificationsRoutes = require('./routes/notifications');
 
 const app = express();
@@ -65,6 +67,8 @@ app.get('/api/health', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/messages', messagesRoutes);
 app.use('/api/rooms', roomsRoutes);
+app.use('/api/groups', groupsRoutes);
+app.use('/api/group-messages', groupMessagesRoutes);
 app.use('/api/notifications', notificationsRoutes);
 
 // Socket.io setup
@@ -98,6 +102,7 @@ const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
   console.log(`\n🔐 Secure-Chat-Hub running on port ${PORT}`);
   console.log(`📱 Install as PWA: http://localhost:${PORT}`);
+  console.log(`👥 Group Chat Ready!`);
   console.log(`📝 Visit: http://localhost:${PORT}`);
   console.log(`🚀 Environment: ${process.env.NODE_ENV || 'development'}\n`);
 });
